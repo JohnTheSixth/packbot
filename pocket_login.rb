@@ -1,8 +1,16 @@
+require 'pry'
+require 'rest-client'
+require 'nokogiri' # for parsing requests
+require 'dotenv' # for keeping api keys and logins
+require 'json'
+Dotenv.load
+
 class PocketLogin
 
   def self.setup
     login_page = RestClient.get("https://getpocket.com/login")
     form_value = Nokogiri::HTML(login_page.body).css("input[class='field-form-check']")[0]["value"]
+    session = { "PHPSESSID" => login_page.cookies["PHPSESSID"] }
 
     login_post = RestClient::Request.execute(:method => :post,
       :url => "https://getpocket.com/login_process.php",
@@ -30,20 +38,21 @@ class PocketLogin
         :is_ajax => "1"
       })
 
-    login_post.cookies["PHPSESSID"] = login_page.cookies["PHPSESSID"]
+    cookies = login_post.cookies.merge(session)
+    # login_success = RestClient::Request.execute(:method => :get,
+    #   :url => "https://getpocket.com/a/queue/list/",
+    #   :headers => {
+    #     "Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    #     "Accept-Encoding" => "gzip, deflate, sdch",
+    #     "Accept-Language" => "en-US,en;q=0.8",
+    #     "Connection" => "keep-alive",
+    #     "DNT" => "1",
+    #     "Host" => "getpocket.com",
+    #     "Upgrade-Insecure-Requests" => "1"
+    #   },
+    #   :cookies => cookies)
 
-    RestClient::Request.execute(:method => :get,
-      :url => "https://getpocket.com/a/queue/list/",
-      :headers => {
-        "Accept" => "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
-        "Accept-Encoding" => "gzip, deflate, sdch",
-        "Accept-Language" => "en-US,en;q=0.8",
-        "Connection" => "keep-alive",
-        "DNT" => "1",
-        "Host" => "getpocket.com",
-        "Upgrade-Insecure-Requests" => "1"
-      },
-      :cookies => login_post.cookies)
+    { :session => session, :cookies => cookies }
   end
 
 end
