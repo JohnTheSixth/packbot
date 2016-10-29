@@ -11,8 +11,7 @@ Dotenv.load
 require_relative './pocket_login' # logs in to Pocket account
 require_relative './pocket_request' # provides class and methods for API calls
 
-
-
+# Ensures all responses are returned as JSON.
 before do
   content_type :json
 end
@@ -30,9 +29,12 @@ get '/' do
 end
 
 get '/authenticate' do
-  # get user session info
+  # Create an active user session. Ideally this should be abstracted to only run
+  # once a day, and then use that day's session to authenticate with Pocket. We
+  # don't want a login request running every time we try to save an article.
   @pocket_session = PocketLogin.setup
-  # create new PocketRequest object
+
+  # Creates new PocketRequest object
   @pocket_request = PocketRequest.new
   authentication = @pocket_request.authenticate
   auth_json = JSON.parse(authentication)
@@ -45,7 +47,7 @@ get '/authorize' do
   body = {
     :status => 200,
     :message => "You need to authorize this application to access your account.",
-    :authorization_uri => "https://github.com/JohnTheSixth"
+    :authorization_uri => ""
   }
   [404, body.to_json]
 end
@@ -74,6 +76,8 @@ get '/json_test' do
   [200, body]
 end
 
+# This is going to be the method that gets called when the slash command is used
+# in Slack, but that is dependent on the authentication working first.
 def send_to_pocket(params)
   pocket_formatting = parse_message(params)
   request = PocketRequest.new
@@ -88,8 +92,6 @@ def send_to_pocket(params)
   binding.pry
 
 end
-
-
 
 def parse_message(params)
   link, tags = "", []

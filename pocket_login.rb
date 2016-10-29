@@ -1,4 +1,4 @@
-require 'pry'
+require 'pry' # for figuring out what's wrong
 require 'rest-client'
 require 'nokogiri' # for parsing requests
 require 'dotenv' # for keeping api keys and logins
@@ -7,6 +7,11 @@ Dotenv.load
 
 class PocketLogin
 
+  # When this method is called in packbot.rb, it logs into pocket by sending a GET
+  # request to the login page, pulling the unique form value from the page, then
+  # submitting a POST with the form value and the email/pass specified in the .env
+  # file. The result of running the method is a hash that returns the session ID,
+  # the cookies with the session ID, and the most recent response from Pocket.
   def self.setup
     login_page = RestClient.get("https://getpocket.com/login")
     form_value = Nokogiri::HTML(login_page.body).css("input[class='field-form-check']")[0]["value"]
@@ -39,6 +44,10 @@ class PocketLogin
       })
 
     cookies = login_post.cookies.merge(session)
+
+    # Possibly another method to run in order to get the list; I don't think it's
+    # needed but I'm not ready to delete it just yet.
+    #
     # login_success = RestClient::Request.execute(:method => :get,
     #   :url => "https://getpocket.com/a/queue/list/",
     #   :headers => {
@@ -52,10 +61,14 @@ class PocketLogin
     #   },
     #   :cookies => cookies)
 
-    { :session => session, :cookies => cookies }
+    { :response => login_post, :cookies => cookies, :session => session }
   end
 
 end
+
+# All of the below is left over from logic I had to write when using HTTParty; again,
+# I don't think it's needed, but I'm not ready to delete it all yet.
+#
   # def self.get_cookies(headers)
   #   @sess_id = @sess_id || headers[:set_cookie].match(/(PHPSESSID\=\w+)\;/)[1]
   #
