@@ -1,0 +1,15 @@
+{
+  "name": "Packbot",
+  "version": "1.0.0",
+  "description": "A web application to send links from Slack to Pocket",
+  "main": "index.js",
+  "repository": "git@github.com:JohnTheSixth/packbot.git",
+  "author": "<john@burge.io>",
+  "license": "MIT",
+  "devDependencies": {
+    "serverless": "^1.25.0"
+  },
+  "scripts": {
+    "sls": "./node_modules/.bin/serverless"
+  }
+}
