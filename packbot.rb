@@ -11,36 +11,40 @@ Dotenv.load
 require_relative './pocket_login' # logs in to Pocket account
 require_relative './pocket_request' # provides class and methods for API calls
 
-# Ensures all responses are returned as JSON.
-before do
-  content_type :json
-end
-
 error = { :text => "Your token is incorrect. Please check your Slack Integrations and update your .env file." }
 
-get '/' do
-  # redirect "enter doc url here"
-  body = {
-    :status => 404,
-    :message => "Hello there. This URL doesn't do anything. Please refer to the documents for details.",
-    :documents => "https://github.com/JohnTheSixth"
-  }
-  [404, body.to_json]
-end
+# get '/authenticate' do
+#   # redirect "enter doc url here"
+#   body = {
+#     :status => 404,
+#     :message => "Hello there. This URL doesn't do anything. Please refer to the documents for details.",
+#     :documents => "https://github.com/JohnTheSixth"
+#   }
+#   [404, body.to_json]
+# end
+
 
 get '/authenticate' do
-  # Create an active user session. Ideally this should be abstracted to only run
-  # once a day, and then use that day's session to authenticate with Pocket. We
-  # don't want a login request running every time we try to save an article.
-  @pocket_session = PocketLogin.setup
+#   # Create an active user session. Ideally this should be abstracted to only run
+#   # once a day, and then use that day's session to authenticate with Pocket. We
+#   # don't want a login request running every time we try to save an article.
+#   @pocket_session = PocketLogin.setup
+#
+#   # Creates new PocketRequest object
+#   @pocket_request = PocketRequest.new
+#   authentication = @pocket_request.authenticate
+#   auth_json = JSON.parse(authentication)
+#   binding.pry
+#   redirect = @pocket_request.authorize_user(@pocket_session.cookies, auth_json["code"])
+#   binding.pry
+  erb :authenticate
+end
 
-  # Creates new PocketRequest object
-  @pocket_request = PocketRequest.new
-  authentication = @pocket_request.authenticate
-  auth_json = JSON.parse(authentication)
-  binding.pry
-  redirect = @pocket_request.authorize_user(@pocket_session.cookies, auth_json["code"])
-  binding.pry
+post '/authenticate' do
+
+end
+
+get '/authenticating' do
 end
 
 get '/authorize' do

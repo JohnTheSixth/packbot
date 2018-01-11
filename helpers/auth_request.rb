@@ -1,11 +1,15 @@
-require 'pry' # for figuring out what's wrong
-require 'rest-client'
-require 'nokogiri' # for parsing requests
-require 'dotenv' # for keeping api keys and logins
-require 'json'
-Dotenv.load
+module Packbot
+  class AuthRequest < Sinatra::Base
 
-class PocketLogin
+    def self.check(user, pass)
+      if user != ENV['SLACK_USER'] || pass != ENV['SLACK_PASS']
+        return false
+      else
+        true
+      end
+    end
+
+
 
   # When this method is called in packbot.rb, it logs into pocket by sending a GET
   # request to the login page, pulling the unique form value from the page, then
@@ -64,6 +68,7 @@ class PocketLogin
     { :response => login_post, :cookies => cookies, :session => session }
   end
 
+end
 end
 
 # All of the below is left over from logic I had to write when using HTTParty; again,
