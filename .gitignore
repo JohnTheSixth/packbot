@@ -1,4 +1,16 @@
+# system files
 .DS_Store
+
+# environment files
 .env
 .ruby-version
+
+# package directories
 node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+
+# log files
+yarn-error.log

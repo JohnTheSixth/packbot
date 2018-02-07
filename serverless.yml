@@ -55,8 +55,28 @@ provider:
 #    - exclude-me-dir/**
 
 functions:
-  hello:
-    handler: handler.hello
+  packbot:
+    environment:
+    package:
+      include:
+        - packbot/index.js
+    handler: index.handler
+    events:
+      - http:
+          path: pack
+          method: post
+          cors:
+            origin: "*"
+            headers:
+              - Content-Type
+              - X-Amz-Date
+              - Authorization
+              - X-Api-Key
+              - X-Amz-Security-Token
+              - X-Amz-User-Agent
+              - snaphuntjwttoken
+              - Access-Control-Allow-Headers
+            allowCredentials: false
 
 #    The following are a few example events you can configure
 #    NOTE: Please make sure to change your handler code to work with those events
